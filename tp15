@@ -1,0 +1,76 @@
+#buble sort
+def bubble_sort(arr, draw_function):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+            draw_function(arr, j, j+1)  # Dibujar el estado actual
+#Quicksort
+def quick_sort(arr, low, high, draw_function):
+    if low < high:
+        pi = partition(arr, low, high, draw_function)
+        quick_sort(arr, low, pi-1, draw_function)
+        quick_sort(arr, pi+1, high, draw_function)
+
+def partition(arr, low, high, draw_function):
+    pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] < pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+        draw_function(arr, i, j)  # Dibujar el estado actual
+    arr[i+1], arr[high] = arr[high], arr[i+1]
+    draw_function(arr, i+1, high)
+    return i+1
+#visualizacion py5
+import py5
+import random
+
+# Datos para ordenar
+arr = [random.randint(10, 400) for _ in range(50)]
+sorting = False
+algorithm = None
+
+def setup():
+    py5.size(800, 400)
+    py5.background(255)
+
+def draw():
+    global sorting
+    py5.background(255)
+    draw_bars(arr)
+    if sorting and algorithm:
+        algorithm()
+
+def draw_bars(arr, index1=None, index2=None):
+    bar_width = py5.width / len(arr)
+    for i in range(len(arr)):
+        if i == index1 or i == index2:
+            py5.fill(255, 0, 0)  # Resaltar elementos comparados
+        else:
+            py5.fill(0)
+        py5.rect(i * bar_width, py5.height - arr[i], bar_width, arr[i])
+
+def bubble_sort_step():
+    global arr, sorting, i, j
+    if i < len(arr):
+        if j < len(arr) - i - 1:
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+            j += 1
+        else:
+            j = 0
+            i += 1
+    else:
+        sorting = False
+
+def key_pressed():
+    global sorting, algorithm, i, j
+    if py5.key == 'b':  # Iniciar Bubble Sort
+        sorting = True
+        i, j = 0, 0
+        algorithm = bubble_sort_step
+
+py5.run_sketch()
